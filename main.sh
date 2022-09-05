@@ -7,10 +7,8 @@ base="$(pwd)"
 cd "$base"
 
 rm -f main.key
-rm -f mysealedsecret2.json
-rm -f mysealedsecret2.yaml
-rm -f mysecret2.json
 rm -f mysecret2.yaml
+rm -f mysealedsecret2.yaml
 
 kind delete cluster
 
@@ -33,6 +31,7 @@ kubeseal --controller-name=sealed-secrets -o yaml <"$base/mysecret2.yaml" >"$bas
 ls -la "$base/mysecret2.yaml" "$base/mysealedsecret2.yaml"
 
 kubectl create -f "$base/mysealedsecret2.yaml"
+kubectl get secret mysecret -o yaml -n default
 kubectl get secret mysecret -o jsonpath="{.data.mypassword}" | base64 --decode
 echo
 

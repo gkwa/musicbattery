@@ -7,7 +7,6 @@ base="$(pwd)"
 cd "$base"
 
 rm -f main.key
-rm -f mysealedsecret1.yaml
 rm -f mysealedsecret2.json
 rm -f mysealedsecret2.yaml
 rm -f mysecret2.json
@@ -28,14 +27,6 @@ kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=sealed-secr
 # keep this public/private key OMG safe:
 kubectl get secret -n kube-system -l sealedsecrets.bitnami.com/sealed-secrets-key -o yaml >"$base/main.key"
 ls -la "$base/main.key"
-
-kubectl create secret generic secret-name --dry-run=client --from-literal=foo=bar -o yaml |
-    kubeseal \
-        --controller-name=sealed-secrets \
-        --controller-namespace=kube-system \
-        --format yaml >"$base/mysealedsecret1.yaml"
-
-ls -la "$base/mysealedsecret1.yaml"
 
 echo -n 'PassW@rd1' | kubectl create secret generic mysecret --dry-run=client --from-file=mypassword=/dev/stdin -o yaml >"$base/mysecret2.yaml"
 kubeseal --controller-name=sealed-secrets -o yaml <"$base/mysecret2.yaml" >"$base/mysealedsecret2.yaml"

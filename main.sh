@@ -31,11 +31,11 @@ kubectl get secret -n kube-system -l sealedsecrets.bitnami.com/sealed-secrets-ke
 ls -la "$base/secrets/main.key"
 
 echo -n 'PassW@rd1' | kubectl create secret generic mysecret --dry-run=client \
-    --from-file=mypassword=/dev/stdin -o yaml >"$base/secrets/mysecret2.yaml"
-kubeseal --controller-name=sealed-secrets -o yaml <"$base/secrets/mysecret2.yaml" >"$base/secrets/mysealedsecret2.yaml"
-ls -la "$base/secrets/mysecret2.yaml" "$base/secrets/mysealedsecret2.yaml"
+    --from-file=mypassword=/dev/stdin -o yaml >"$base/secrets/mysecret.yaml"
+kubeseal --controller-name=sealed-secrets -o yaml <"$base/secrets/mysecret.yaml" >"$base/secrets/mysealedsecret.yaml"
+ls -la "$base/secrets/mysecret.yaml" "$base/secrets/mysealedsecret.yaml"
 
-kubectl create -f "$base/secrets/mysealedsecret2.yaml"
+kubectl create -f "$base/secrets/mysealedsecret.yaml"
 kubectl get secret mysecret -o yaml -n default
 kubectl get secret mysecret -o jsonpath="{.data.mypassword}" | base64 --decode
 echo
@@ -58,7 +58,7 @@ kubectl delete pods -l app.kubernetes.io/name=sealed-secrets -n kube-system
 kubectl get pods -l app.kubernetes.io/name=sealed-secrets -n kube-system
 kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=sealed-secrets --namespace kube-system
 
-kubectl apply -f "$base/secrets/mysealedsecret2.yaml"
+kubectl apply -f "$base/secrets/mysealedsecret.yaml"
 
 kubectl get secrets --all-namespaces
 kubectl get secrets --all-namespaces | sed 1d | wc -l

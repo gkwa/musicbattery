@@ -19,6 +19,8 @@ mkdir -p "$base/secrets"
 
 kubectl config get-contexts
 
+kubectl config use-context kind-sealed1
+
 helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
 helm repo update sealed-secrets
 
@@ -48,6 +50,9 @@ kind delete cluster --name sealed1
 
 # create new cluster
 kind create cluster --wait 3m --name sealed2
+
+kubectl config use-context kind-sealed2
+
 helm install sealed-secrets --namespace kube-system sealed-secrets/sealed-secrets
 kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=sealed-secrets --namespace kube-system
 

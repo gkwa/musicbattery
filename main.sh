@@ -56,8 +56,10 @@ kubectl config use-context kind-sealed2
 helm install sealed-secrets --namespace kube-system sealed-secrets/sealed-secrets
 kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=sealed-secrets --namespace kube-system
 
-# re-add our private key and trigger controller to reload it
+# re-add our private key
 kubectl apply -f "$base/secrets/main.key"
+
+# trigger controller to reload private key main.key
 kubectl delete pods -l app.kubernetes.io/name=sealed-secrets -n kube-system
 
 kubectl get pods -l app.kubernetes.io/name=sealed-secrets -n kube-system
